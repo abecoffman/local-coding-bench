@@ -1,0 +1,49 @@
+runtime = "mlx"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "4bit"
+path = "models/mlx/llama/Meta-Llama-3.1-8B-Instruct-4bit"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "8bit"
+path = "models/mlx/llama/Meta-Llama-3.1-8B-Instruct-8bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "4bit"
+path = "models/mlx/qwen/Qwen3.6-27B-4bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "8bit"
+path = "models/mlx/qwen/Qwen3.6-27B-8bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "4bit"
+path = "models/mlx/qwen/Qwen3-4B-Instruct-2507-4bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "8bit"
+path = "models/mlx/qwen/Qwen3-4B-Instruct-2507-8bit"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "MXFP4-Q4"
+path = "models/mlx/openai/gpt-oss-20b-MXFP4-Q4"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "MXFP4-Q8"
+path = "models/mlx/openai/gpt-oss-20b-MXFP4-Q8"

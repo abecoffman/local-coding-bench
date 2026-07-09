@@ -1,0 +1,49 @@
+runtime = "llama.cpp"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "Q4_K_M"
+path = "models/gguf/llama/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "Q8_0"
+path = "models/gguf/llama/Meta-Llama-3.1-8B-Instruct-Q8_0.gguf"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "Q4_K_M"
+path = "models/gguf/qwen/Qwen3.6-27B-Q4_K_M.gguf"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "Q8_0"
+path = "models/gguf/qwen/Qwen3.6-27B-Q8_0.gguf"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "Q4_K_M"
+path = "models/gguf/qwen/Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "Q8_0"
+path = "models/gguf/qwen/Qwen3-4B-Instruct-2507-Q8_0.gguf"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "Q4_K_M"
+path = "models/gguf/openai/gpt-oss-20b-Q4_K_M.gguf"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "Q8_0"
+path = "models/gguf/openai/gpt-oss-20b-Q8_0.gguf"

@@ -1,0 +1,6 @@
+[args]
+n_problems = 8
+max_tokens = 4096
+dataset = "humanevalplus"
+problem_offset = 144
+thinking = true
