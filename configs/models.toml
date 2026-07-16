@@ -5,45 +5,97 @@ family = "llama"
 name = "Meta-Llama-3.1-8B-Instruct"
 quant = "Q4_K_M"
 path = "models/gguf/llama/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+hf_repo = "unsloth/Meta-Llama-3.1-8B-Instruct-GGUF"
+hf_files = ["Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"]
 
 [[models]]
 family = "llama"
 name = "Meta-Llama-3.1-8B-Instruct"
 quant = "Q8_0"
 path = "models/gguf/llama/Meta-Llama-3.1-8B-Instruct-Q8_0.gguf"
+hf_repo = "unsloth/Meta-Llama-3.1-8B-Instruct-GGUF"
+hf_files = ["Meta-Llama-3.1-8B-Instruct-Q8_0.gguf"]
 
 [[models]]
 family = "qwen"
 name = "Qwen3.6-27B"
 quant = "Q4_K_M"
 path = "models/gguf/qwen/Qwen3.6-27B-Q4_K_M.gguf"
+hf_repo = "unsloth/Qwen3.6-27B-GGUF"
+hf_files = ["Qwen3.6-27B-Q4_K_M.gguf"]
 
 [[models]]
 family = "qwen"
 name = "Qwen3.6-27B"
 quant = "Q8_0"
 path = "models/gguf/qwen/Qwen3.6-27B-Q8_0.gguf"
+hf_repo = "unsloth/Qwen3.6-27B-GGUF"
+hf_files = ["Qwen3.6-27B-Q8_0.gguf"]
 
 [[models]]
 family = "qwen"
 name = "Qwen3-4B-Instruct-2507"
 quant = "Q4_K_M"
 path = "models/gguf/qwen/Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+hf_repo = "unsloth/Qwen3-4B-Instruct-2507-GGUF"
+hf_files = ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf"]
 
 [[models]]
 family = "qwen"
 name = "Qwen3-4B-Instruct-2507"
 quant = "Q8_0"
 path = "models/gguf/qwen/Qwen3-4B-Instruct-2507-Q8_0.gguf"
+hf_repo = "unsloth/Qwen3-4B-Instruct-2507-GGUF"
+hf_files = ["Qwen3-4B-Instruct-2507-Q8_0.gguf"]
 
 [[models]]
 family = "openai"
 name = "gpt-oss-20b"
 quant = "Q4_K_M"
 path = "models/gguf/openai/gpt-oss-20b-Q4_K_M.gguf"
+hf_repo = "unsloth/gpt-oss-20b-GGUF"
+hf_files = ["gpt-oss-20b-Q4_K_M.gguf"]
 
 [[models]]
 family = "openai"
 name = "gpt-oss-20b"
 quant = "Q8_0"
 path = "models/gguf/openai/gpt-oss-20b-Q8_0.gguf"
+hf_repo = "unsloth/gpt-oss-20b-GGUF"
+hf_files = ["gpt-oss-20b-Q8_0.gguf"]
+
+[[models]]
+family = "qwen"
+name = "Qwen3-Coder-Next"
+quant = "Q4_K_M"
+path = "models/gguf/qwen/Qwen3-Coder-Next-Q4_K_M.gguf"
+hf_repo = "unsloth/Qwen3-Coder-Next-GGUF"
+hf_files = ["Qwen3-Coder-Next-Q4_K_M.gguf"]
+
+[[models]]
+family = "qwen"
+name = "Qwen3-Coder-Next"
+quant = "Q8_0"
+path = "models/gguf/qwen/Q8_0/Qwen3-Coder-Next-Q8_0-00001-of-00003.gguf"
+hf_repo = "unsloth/Qwen3-Coder-Next-GGUF"
+hf_files = [
+  "Q8_0/Qwen3-Coder-Next-Q8_0-00001-of-00003.gguf",
+  "Q8_0/Qwen3-Coder-Next-Q8_0-00002-of-00003.gguf",
+  "Q8_0/Qwen3-Coder-Next-Q8_0-00003-of-00003.gguf",
+]
+
+[[models]]
+family = "mistral"
+name = "Devstral-Small-2-24B-Instruct-2512"
+quant = "Q4_K_M"
+path = "models/gguf/mistral/Devstral-Small-2-24B-Instruct-2512-Q4_K_M.gguf"
+hf_repo = "unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF"
+hf_files = ["Devstral-Small-2-24B-Instruct-2512-Q4_K_M.gguf"]
+
+[[models]]
+family = "mistral"
+name = "Devstral-Small-2-24B-Instruct-2512"
+quant = "Q8_0"
+path = "models/gguf/mistral/Devstral-Small-2-24B-Instruct-2512-Q8_0.gguf"
+hf_repo = "unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF"
+hf_files = ["Devstral-Small-2-24B-Instruct-2512-Q8_0.gguf"]

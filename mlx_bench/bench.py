@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""MLX equivalent of bench.py: runs an MLX benchmark sweep and appends normalized
-rows to results.jsonl using the same schema as the llama.cpp driver.
+"""Runs an MLX benchmark sweep and appends normalized rows to a results file,
+matching the row schema a llama.cpp-style benchmark driver (e.g. one built
+around llama-bench) would use.
 
 Depth methodology: for a given depth D, we build a fresh prompt_cache, prefill
 it with D filler tokens (untimed), then measure against that primed cache:
@@ -12,8 +13,17 @@ This isolation matters: measuring pp as a single depth+n_prompt prefill
 without cache reuse would conflate attention-over-cache cost with raw batch
 throughput, which increases with batch size and trends the wrong direction.
 
+Every path (--models, --sweep, a model's `path` in the roster, --output,
+--runs-dir) is resolved relative to wherever you run this from — nothing
+here looks outside this invocation's own arguments for where things live.
+--output/--runs-dir default to ./results.jsonl and ./runs, so running from
+the repo root (as in the first two examples below) lands them there by
+default; running from within this directory keeps everything local to it.
+
 Usage:
-    .venv/bin/python scripts/mlx_bench.py --models configs/models-mlx.toml --sweep configs/sweeps/standard-mlx.toml [--label m5-max-macbook]
+    .venv/bin/python mlx_bench/bench.py --models mlx_bench/configs/models.toml --sweep mlx_bench/configs/sweeps/standard.toml [--label m5-max-macbook]
+    .venv/bin/python mlx_bench/bench.py --models mlx_bench/configs/models.toml --sweep mlx_bench/configs/sweeps/standard.toml --model qwen3-coder-next
+    cd mlx_bench && .venv/bin/python bench.py --models configs/models.toml --sweep configs/sweeps/standard.toml  # fully standalone: results.jsonl/runs/ stay in this directory
 """
 import argparse
 import json
@@ -26,10 +36,6 @@ import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-RESULTS_PATH = REPO_ROOT / "results.jsonl"
-RUNS_DIR = REPO_ROOT / "runs"
-
 import mlx.core as mx  # noqa: E402
 import mlx_lm  # noqa: E402
 from mlx_lm.generate import stream_generate  # noqa: E402
@@ -41,6 +47,19 @@ FILLER_TEXT = "The quick brown fox jumps over the lazy dog. " * 4000
 
 def slugify(*parts: str) -> str:
     return "_".join(p.replace(" ", "-") for p in parts if p)
+
+
+def select_models(models: list[dict], filters: list[str] | None) -> list[dict]:
+    """Filter a model roster by --model substrings, OR'd together, matched
+    case-insensitively against "family name quant". No filters means the
+    whole roster, preserving the old default behavior."""
+    if not filters:
+        return models
+    needles = [f.lower() for f in filters]
+    return [
+        m for m in models
+        if any(n in f"{m['family']} {m['name']} {m['quant']}".lower() for n in needles)
+    ]
 
 
 def model_ready(model_path: Path) -> bool:
@@ -72,13 +91,14 @@ def gpu_info() -> str:
     return platform.processor() or "unknown"
 
 
+_filler_ids_cache: list[int] | None = None
+
+
 def filler_tokens(tokenizer, n: int) -> list[int]:
-    global _FILLER_IDS
-    try:
-        ids = _FILLER_IDS
-    except NameError:
-        ids = tokenizer.encode(FILLER_TEXT)
-        globals()["_FILLER_IDS"] = ids
+    global _filler_ids_cache
+    if _filler_ids_cache is None:
+        _filler_ids_cache = tokenizer.encode(FILLER_TEXT)
+    ids = _filler_ids_cache
     while len(ids) < n:
         ids = ids + ids
     return ids[:n] if n > 0 else ids[:1]
@@ -121,15 +141,15 @@ def run_point(model, tokenizer, n_prompt, n_gen, n_depth, reps):
     return pp_ts, tg_ts
 
 
-def run_model(model_cfg: dict, args: dict, sweep_name: str, label: str) -> int:
-    model_path = REPO_ROOT / model_cfg["path"]
+def run_model(model_cfg: dict, args: dict, sweep_name: str, label: str, results_path: Path, runs_dir: Path) -> int:
+    model_path = Path(model_cfg["path"])
     if not model_ready(model_path):
         print(f"skip: model not ready (missing or still downloading): {model_path}", file=sys.stderr)
         return 0
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     run_id = f"{timestamp}_{slugify(model_cfg['family'], model_cfg['name'], model_cfg['quant'])}_mlx"
-    run_dir = RUNS_DIR / run_id
+    run_dir = runs_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"loading: {model_path}")
@@ -146,7 +166,7 @@ def run_model(model_cfg: dict, args: dict, sweep_name: str, label: str) -> int:
 
     count = 0
     log_lines = []
-    with RESULTS_PATH.open("a") as results_file:
+    with results_path.open("a") as results_file:
         for depth in d_values:
             for p in p_values:
                 pp_ts, tg_ts = run_point(model, tokenizer, p, n_gen, depth, reps)
@@ -161,8 +181,6 @@ def run_model(model_cfg: dict, args: dict, sweep_name: str, label: str) -> int:
                         "runtime": "mlx",
                         "mlx_lm_version": mlx_lm.__version__,
                         "gpu_info": gpu,
-                        "model_path": str(model_path),
-                        "model_type": model_cfg["quant"],
                         "n_prompt": n_prompt_val,
                         "n_gen": n_gen_val,
                         "n_depth": depth,
@@ -195,6 +213,21 @@ def main() -> None:
     parser.add_argument("--models", type=Path, required=True, help="path to a model roster .toml file")
     parser.add_argument("--sweep", type=Path, required=True, help="path to a sweep-args .toml file")
     parser.add_argument("--label", default="", help="machine/environment tag (e.g. m5-max-macbook)")
+    parser.add_argument(
+        "--model",
+        action="append",
+        help="substring filter on 'family name quant' (case-insensitive), e.g. --model qwen3-coder-next. "
+        "Repeatable, OR'd together. Omit to run the whole roster.",
+    )
+    parser.add_argument(
+        "--output", type=Path, default=Path("results.jsonl"),
+        help="results file to append rows to (default: ./results.jsonl). Point this at a shared "
+        "results.jsonl (e.g. ../results.jsonl) to keep MLX rows alongside llama.cpp ones.",
+    )
+    parser.add_argument(
+        "--runs-dir", type=Path, default=Path("runs"),
+        help="directory to write per-run raw output under (default: ./runs)",
+    )
     args = parser.parse_args()
 
     with args.models.open("rb") as f:
@@ -207,12 +240,16 @@ def main() -> None:
 
     sweep_name = args.sweep.stem
 
-    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.runs_dir.mkdir(parents=True, exist_ok=True)
+
+    models = select_models(models_config["models"], args.model)
+    if not models:
+        sys.exit(f"--model {args.model} matched no models in {args.models}")
 
     total = 0
-    for model_cfg in models_config["models"]:
-        total += run_model(model_cfg, sweep_config.get("args", {}), sweep_name, args.label)
+    for model_cfg in models:
+        total += run_model(model_cfg, sweep_config.get("args", {}), sweep_name, args.label, args.output, args.runs_dir)
 
     print(f"done: {total} total result row(s)")
 

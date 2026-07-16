@@ -1,0 +1,85 @@
+runtime = "mlx"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "4bit"
+path = "models/mlx/llama/Meta-Llama-3.1-8B-Instruct-4bit"
+hf_repo = "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit"
+
+[[models]]
+family = "llama"
+name = "Meta-Llama-3.1-8B-Instruct"
+quant = "8bit"
+path = "models/mlx/llama/Meta-Llama-3.1-8B-Instruct-8bit"
+hf_repo = "mlx-community/Meta-Llama-3.1-8B-Instruct-8bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "4bit"
+path = "models/mlx/qwen/Qwen3.6-27B-4bit"
+hf_repo = "mlx-community/Qwen3.6-27B-4bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3.6-27B"
+quant = "8bit"
+path = "models/mlx/qwen/Qwen3.6-27B-8bit"
+hf_repo = "mlx-community/Qwen3.6-27B-8bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "4bit"
+path = "models/mlx/qwen/Qwen3-4B-Instruct-2507-4bit"
+hf_repo = "mlx-community/Qwen3-4B-Instruct-2507-4bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-4B-Instruct-2507"
+quant = "8bit"
+path = "models/mlx/qwen/Qwen3-4B-Instruct-2507-8bit"
+hf_repo = "mlx-community/Qwen3-4B-Instruct-2507-8bit"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "MXFP4-Q4"
+path = "models/mlx/openai/gpt-oss-20b-MXFP4-Q4"
+hf_repo = "mlx-community/gpt-oss-20b-MXFP4-Q4"
+
+[[models]]
+family = "openai"
+name = "gpt-oss-20b"
+quant = "MXFP4-Q8"
+path = "models/mlx/openai/gpt-oss-20b-MXFP4-Q8"
+hf_repo = "mlx-community/gpt-oss-20b-MXFP4-Q8"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-Coder-Next"
+quant = "4bit"
+path = "models/mlx/qwen/Qwen3-Coder-Next-4bit"
+hf_repo = "mlx-community/Qwen3-Coder-Next-4bit"
+
+[[models]]
+family = "qwen"
+name = "Qwen3-Coder-Next"
+quant = "8bit"
+path = "models/mlx/qwen/Qwen3-Coder-Next-8bit"
+hf_repo = "mlx-community/Qwen3-Coder-Next-8bit"
+
+[[models]]
+family = "mistral"
+name = "Devstral-Small-2-24B-Instruct-2512"
+quant = "4bit"
+path = "models/mlx/mistral/Devstral-Small-2-24B-Instruct-2512-4bit"
+hf_repo = "mlx-community/Devstral-Small-2-24B-Instruct-2512-4bit"
+
+[[models]]
+family = "mistral"
+name = "Devstral-Small-2-24B-Instruct-2512"
+quant = "8bit"
+path = "models/mlx/mistral/Devstral-Small-2-24B-Instruct-2512-8bit"
+hf_repo = "mlx-community/Devstral-Small-2-24B-Instruct-2512-8bit"

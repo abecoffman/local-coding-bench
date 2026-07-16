@@ -4,7 +4,7 @@ scores pass@1 (greedy decoding, single sample), and appends a summary row to
 eval_results.jsonl plus per-problem detail to eval_runs/<run_id>/details.jsonl.
 
 This is the quality half of the speed-vs-quality tradeoff story; see
-results.jsonl (bench.py / mlx_bench.py) for the speed half.
+results.jsonl (bench.py / mlx_bench/bench.py) for the speed half.
 
 Caveats:
   - HumanEval subset, not the full 164 problems (see `n_problems` in the
@@ -22,7 +22,8 @@ Caveats:
 
 Usage:
     .venv/bin/python scripts/coding_eval.py --models configs/models.toml --sweep configs/sweeps/coding-eval.toml --label m5-max-macbook
-    .venv/bin/python scripts/coding_eval.py --models configs/models-mlx.toml --sweep configs/sweeps/coding-eval.toml --label m5-max-macbook
+    .venv/bin/python scripts/coding_eval.py --models mlx_bench/configs/models.toml --sweep configs/sweeps/coding-eval.toml --label m5-max-macbook
+    .venv/bin/python scripts/coding_eval.py --models configs/models.toml --sweep configs/sweeps/coding-eval.toml --model qwen3-coder-next
 """
 import argparse
 import json
@@ -37,7 +38,9 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+from _common import find_repo_root, select_models, slugify
+
+REPO_ROOT = find_repo_root(Path(__file__).resolve().parent)
 EVAL_RESULTS_PATH = REPO_ROOT / "eval_results.jsonl"
 EVAL_RUNS_DIR = REPO_ROOT / "eval_runs"
 DATASETS = {
@@ -56,10 +59,6 @@ INSTRUCTION_TEMPLATE = """Complete the following Python function. Respond with O
 {prompt}"""
 
 CODE_BLOCK_RE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.DOTALL)
-
-
-def slugify(*parts: str) -> str:
-    return "_".join(p.replace(" ", "-") for p in parts if p)
 
 
 def model_ready(model_path: Path) -> bool:
@@ -307,6 +306,12 @@ def main() -> None:
     parser.add_argument("--sweep", type=Path, required=True, help="path to a sweep-args .toml file")
     parser.add_argument("--label", default="", help="machine/environment tag (e.g. m5-max-macbook)")
     parser.add_argument("--port", type=int, default=8899, help="port for llama-server (llama.cpp runtime only)")
+    parser.add_argument(
+        "--model",
+        action="append",
+        help="substring filter on 'family name quant' (case-insensitive), e.g. --model qwen3-coder-next. "
+        "Repeatable, OR'd together. Omit to run the whole roster.",
+    )
     args = parser.parse_args()
 
     with args.models.open("rb") as f:
@@ -321,7 +326,11 @@ def main() -> None:
     sweep_name = args.sweep.stem
     sweep_args = sweep_config.get("args", {})
 
-    for model_cfg in models_config["models"]:
+    models = select_models(models_config["models"], args.model)
+    if not models:
+        sys.exit(f"--model {args.model} matched no models in {args.models}")
+
+    for model_cfg in models:
         run_model(model_cfg, runtime, sweep_args, sweep_name, args.label, args.port)
 
 

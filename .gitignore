@@ -3,6 +3,10 @@
 /.venv
 /runs
 /eval_runs
+/results.jsonl
+/eval_results.jsonl
+/results-aggregated.jsonl
+/results-aggregated.csv
 __pycache__/
 *.pyc
 .DS_Store
